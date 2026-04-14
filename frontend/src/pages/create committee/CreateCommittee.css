@@ -1,0 +1,32 @@
+
+.outer-form{
+    width:100%;
+    max-width:500px;
+
+}
+.inner-form-text-input{
+background-color: #FB9D57;
+height:35px;
+border-radius: 5px;
+padding:0px 20px;
+}
+.inner-form input::placeholder{
+    color: black;
+}
+.radio-div{
+    background-color: #FB9D57;
+    border-radius:10px;
+}
+.committee-type{
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}
+.committee-type div{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width:60px;
+    border-radius: 10px;
+}

@@ -1,0 +1,67 @@
+.outer-container {
+    background-color: #FED788;
+    border-radius: 20px;
+    max-width: 600px;
+}
+
+.input-fields {
+    background-color: #FB9D57;
+    border-radius: 5px;
+    height: 40px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.input-fields input::placeholder {
+    color: black
+}
+.input-fields input{
+    outline: none;
+    background-color:none;
+}
+.input-fields input::after{
+    background-color: none;
+}
+
+.icons {
+    font-size: 20px;
+    margin:0px 5px;
+}
+
+.profileimg {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.profile-div {
+    background-color: #FB9D57;
+    border-radius: 5px;
+    padding: 0px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.create-profile-btn {
+    background-color: #D36556;
+    padding: 10px 20px;
+    border-radius: 20px;
+    color: #FFF8EA;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.file-btn {
+    background-color: #61AB78;
+    max-width: 130px;
+    border-radius: 20px;
+    padding: 10px 3px;
+    font-size: 10px;
+    color: black;
+    cursor: pointer;
+}

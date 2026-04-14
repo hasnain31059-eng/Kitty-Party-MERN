@@ -1,0 +1,53 @@
+.profile{
+    width:70px;
+    height:70px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+.profile img {
+width: auto;
+height: auto;
+}
+
+.stars {
+    height: 1rem;
+    display: flex;
+    width: 110px;
+}
+
+.stars img {
+    height: 100%;
+}
+
+.lobby-tables-outer {
+    background-color: #FED788;
+    width: 100%;
+    max-width: 800px;
+    border-radius: 20px;
+    padding: 10px;
+}
+
+.lobby-tables-outer table {
+    width: 100%;
+    text-align: center;
+}
+.lobby-tables-outer th{
+    border: 1px solid black;
+    background-color: #D36556;
+
+}
+.lobby-tables-outer td{
+    border: 1px solid black;
+    background-color: #FFFFFF;
+    padding-inline: 5px;
+}
+.committee-detail-btn{
+    background-color:#61AB78;
+    color: white;
+}
+.committee-detail-btn:hover{
+    background-color: #D36556;
+}

@@ -1,0 +1,27 @@
+.payment-form{
+    background-color: #FED788;
+    width:100%;
+    max-width:400px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-inline: auto;
+    margin-top:40px;
+}
+.receipt-div{
+    background-color: #D36556;
+    width:300px;
+    height:300px;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+}
+.payment-receipt-btn{
+    background-color: #FB9D57;
+    padding:0px 10px;
+    margin:5px 0px;
+    border-radius: 5px;
+    color:white;
+}

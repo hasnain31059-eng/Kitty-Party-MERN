@@ -1,0 +1,27 @@
+.login-div{
+    width:100%;
+    height:100vh;
+}
+.login-catface{
+    background-color: #FECE5E;
+    width:200px;
+    height:200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+}
+
+.login-catface img{
+    width:170px;
+    height: auto;
+}
+.textboxes{
+    border-color:#EEE4DA;
+    width:250px;
+    height:40px;
+}
+.login-btn{
+    background-color:#FB8668;
+    color:white;
+}

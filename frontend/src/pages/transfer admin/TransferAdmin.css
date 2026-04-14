@@ -1,0 +1,19 @@
+
+.tr_card_outer{
+    background-color: #FED788;
+    border-radius: 20px;
+    padding: 10px;
+    width:100%;
+    max-width:400px;
+}
+.tr_card_img{
+    background-color: #FB9D57;
+    width:70px;
+    height: 70px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    contain: content;
+    margin: 0px 5px;
+}

@@ -1,0 +1,10 @@
+.bidding-btn{
+    background-color: #D36556;
+    padding: 5px 20px;
+    margin: 0px 10px;
+    border-radius: 5px;
+    color:white;
+}
+.bidding-btn:hover{
+    background-color: #d36556e8;
+}
