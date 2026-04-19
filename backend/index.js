@@ -1354,7 +1354,6 @@ app.put('/pay-refund', upload.single('payment_img'), async (req, res) => {
     // ,message
     // ,committee_admin_id,
     // amount}
-    console.log(obj);
     let singlefile = req.file;
     if (singlefile) {
         await committee_refund.updateOne({ 'committee_id':obj.committee_id,'user_id':obj.user_id }, {
@@ -1392,7 +1391,9 @@ app.put('/reject-refund',async(req,res)=>{
      console.log(obj);
      await committee_refund.updateOne({'committee_id':obj.committee_id,'user_id':obj.user_id},{$set:{
         payment_type:'Not Paid yet',
-        payment_status:false
+        payment_status:false,
+        approval:false,
+        payment_img:null
      }})
     
      let newnotif=new notificationmodel({
@@ -1403,4 +1404,22 @@ app.put('/reject-refund',async(req,res)=>{
         notification_type:5
      })
      await newnotif.save();
+     res.send("Refud Rejected")
 })
+app.put('/approve-refund',async(req,res)=>{
+    let obj=req.body;//{whole refund obj}
+    if(obj.payment_type==='Not Paid yet'){
+        await committee_refund.updateOne({'_id':obj._id},{$set:{'payment_status':true,'approval':true,'payment_type':'cash'}});
+    }
+    else{
+        await committee_refund.updateOne({'_id':obj._id},{$set:{'approval':true}});
+    }
+    res.send("refund Accepted");
+})
+
+app.get('/get-refund-of-user/:id',async(req,res)=>{
+    let user_id=req.params.id; //user_id
+    let data=await committee_refund.find({user_id,approval:false});
+    res.send(data);
+})
+

@@ -1,7 +1,7 @@
 import './Notification.css'
 import Navigation from '../../components/navigation/Navigation'
 import { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios'
 
 function Notification() {
@@ -9,7 +9,7 @@ function Notification() {
     const [all_notifications, setall_notifications] = useState([]);
     const [payment_type, setpayment_type] = useState('cash');//used in notification no 6 and 8.
     const [return_img, setreturn_img] = useState('');
-
+    const navigate=useNavigate();
     let handlereject = async (notification_id, receiver_id, committee_id) => {
         await axios.post(`http://localhost:8080/reject-request/${notification_id}`, { receiver_id, committee_id, 'notification_type': 2 });
         getall_notifications();
@@ -60,6 +60,7 @@ function Notification() {
         axios.put('http://localhost:8080/pay-refund',formdata).then((res)=>{
             alert(res.data);
         })
+        navigate('/lobby');
     }
 
     useEffect(() => {
@@ -232,6 +233,7 @@ function Notification() {
                                     <div className='flex justify-end pr-7'>
                                         <button className='bg-[#D36556]  px-2 py-1 mx-2 rounded-2xl hover:bg-[#2f884be3] text-white'
                                             onClick={() => handlereturn(value)} >PayNow</button>
+                                          <button className='bg-[#D36556]  px-2 py-1 mx-2 rounded-2xl hover:bg-[#2f884be3] text-white' onClick={() => clear_payment_notification(value._id)}>Clear</button>
                                     </div>
                                 </div>
                             )

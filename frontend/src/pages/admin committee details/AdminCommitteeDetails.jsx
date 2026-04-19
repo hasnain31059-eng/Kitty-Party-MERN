@@ -94,15 +94,32 @@ function AdminCommitteeDetails() {
         setlarge_view_trigger((pre) => !pre);
     }
 
-    let reject_return=(committee_id,user_id)=>{
-       let message= prompt("Enter Reason of Rejection")
-       if(message!=='' && message!==null){
-        axios.put('http://localhost:8080/reject-refund',{committee_id,user_id,message}).then((res)=>{
+    let get_all_refund = () => {
+        axios.get(`http://localhost:8080/get-all-refunds/${data._id}`).then((res) => {
+            setall_returns(res.data);
         })
-       }
-       else{
-        alert('please enter the reason of rejection');
-       }
+    }
+    let reject_return = async (committee_id, user_id) => {
+        let message = prompt("Enter Reason of Rejection")
+        if (message !== '' && message !== null) {
+            await axios.put('http://localhost:8080/reject-refund', { committee_id, user_id, message }).then((res) => {
+                get_all_refund();
+                alert(res.data);
+            })
+
+        }
+        else {
+            alert('please enter the reason of rejection');
+        }
+    }
+
+    let accept_return = async (value) => {
+        //value is the whole noitification obj
+        await axios.put('http://localhost:8080/approve-refund', value).then((res) => {
+            alert(res.data);
+            get_all_refund();
+        })
+
     }
 
     useEffect(() => {
@@ -122,7 +139,6 @@ function AdminCommitteeDetails() {
 
         axios.get(`http://localhost:8080/get-all-refunds/${data._id}`).then((res) => {
             setall_returns(res.data);
-
         })
 
     }, [])
@@ -377,16 +393,12 @@ function AdminCommitteeDetails() {
                                     <div className='flex justify-center items-center gap-2'>
                                         {!value.approval && (
                                             <button className='text-[#4F9E7D] text-xl' onClick={() => {
-                                                if (value.payment_type !== 'Not Paid yet') {
-                                                    approve_payment(value.cycle_id, value.member_id);
-                                                } else {
-                                                    admin_pay_member_payment(value.cycle_id, value.member_id);
-                                                }
+                                                accept_return(value)
                                             }}><HiOutlineCheck /></button>
                                         )}
                                         {value.payment_type !== 'Not Paid yet' && (
-                                            <button className='text-[#D36556] text-xl' onClick={() =>{
-                                                reject_return(value.committee_id,value.user_id);
+                                            <button className='text-[#D36556] text-xl' onClick={() => {
+                                                reject_return(value.committee_id, value.user_id);
                                             }}><RxCross2 /></button>
                                         )}
                                     </div>
