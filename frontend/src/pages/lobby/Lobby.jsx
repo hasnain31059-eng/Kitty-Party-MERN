@@ -20,6 +20,7 @@ function Lobby() {
         refund_img: null,
         refund_receipt_preview: null
     })
+    let [all_personal_committees,setall_personal_committees]=useState([]);
     const [refund_hider, setrefund_hider] = useState(false);
     let handle_refund_change = (e) => {
         let { name, type, value } = e.target;
@@ -94,7 +95,9 @@ function Lobby() {
                 axios.get(`http://localhost:8080/get-all-committees-of-admin/${res.data._id}`).then((res) => {
                     setadmin_committee(res.data);
                 })
-
+                axios.get(`http://localhost:8080/all-personal-committees/${res.data._id}`).then((res)=>{
+                    setall_personal_committees(res.data);
+                })
                 axios.get(`http://localhost:8080/get-refund-of-user/${res.data._id}`).then((res) => {
                     setrefund(res.data)
                 })
@@ -171,6 +174,46 @@ function Lobby() {
             </div>
 
             <div className='lobby-tables-outer mx-auto my-5'>
+                <h1 className='mb-2 font-medium'>All Personal Committees</h1>
+                <div className='overflow-x-scroll sm:overflow-x-hidden'>
+                    <table className='border-collapse '>
+                        <thead>
+                            <tr>
+                                <th>
+                                    ID
+                                </th>
+                                <th>
+                                    Name
+                                </th>
+                                <th>
+                                    Details
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {
+                                all_personal_committees.map((value, index) => (
+                                    <tr key={index}>
+                                        <td>{value._id}</td>
+                                        <td>{value.committee_name}</td>
+                                        {/* ? is used to prevent the code for crashing if value is null or un defined */}
+                                        <td>
+                                            <button className='committee-detail-btn px-3 my-1 rounded-2xl'
+                                                onClick={() => { navigate('/personal-committee', { state: value }) }}>
+                                                Show
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+            <div className='lobby-tables-outer mx-auto my-5'>
                 <h1 className='mb-2 font-medium'>All Joined Committees</h1>
                 <div className='overflow-x-scroll sm:overflow-x-hidden'>
                     <table className='border-collapse '>
@@ -209,6 +252,8 @@ function Lobby() {
                 </div>
 
             </div>
+
+
 
 
 
@@ -255,7 +300,7 @@ function Lobby() {
 
 
             {
-                refund.length>0 && (
+                refund.length > 0 && (
                     <div className='lobby-tables-outer mx-auto my-5'>
                         <h1 className='mb-2 font-medium'>Return Amounts</h1>
                         <div className='overflow-x-scroll sm:overflow-x-hidden'>

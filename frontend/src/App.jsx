@@ -16,6 +16,7 @@ import TransferAdmin from './pages/transfer admin/TransferAdmin.jsx'
 import Bidding from './pages/bidding/Bidding.jsx'
 import AdminCommitteeDetails from './pages/admin committee details/AdminCommitteeDetails.jsx'
 import Payment from './pages/payment/Payment.jsx'
+import PersonalCommittee from './pages/personal committees/PersonalCommittee.jsx'
 function App() {
   return (
     <>
@@ -33,7 +34,7 @@ function App() {
       <Route path='/bidding' element={<Bidding/>}/>
       <Route path='/admin-committee-details' element={<AdminCommitteeDetails/>}/>
       <Route path='/payment'element={<Payment/>}/>
-      
+      <Route path='/Personal-committee' element={<PersonalCommittee/>}/>
     </Routes>
     </>
   )

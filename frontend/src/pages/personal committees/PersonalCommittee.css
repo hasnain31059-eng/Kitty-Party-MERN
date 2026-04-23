@@ -1,0 +1,137 @@
+.add-members-div{
+    background-color: #FED788;
+    width:140px;
+    border-radius: 10px;
+}
+.add-btn{
+    background-color: #D36556;
+    width:20px;
+    height: 20px;
+    border-radius: 50%;
+    text-align: center;
+    color:white;
+
+}
+.details-outer{
+    background-color: #FED788;
+    width: 100%;
+    max-width: 500px;
+    padding:10px;
+    border-radius: 15px;
+}
+.dues-div{
+    background-color: #FEF4E8;
+    border-radius: 10px;
+    padding: 10px 0px;
+}
+.dues-div-details{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+.dues-doller{
+    background-color: #FB9D57;
+    width:40px;
+    height: 40px;
+    border-radius: 50%;
+    color: #D36556;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.pay-now-btn{
+    background-color:#FED788;
+    font-size: 14px;
+    padding:4px 10px;
+    border-radius: 20px;
+}
+.line{
+    height: 10px;
+    margin: 8px 50px;
+    border-radius: 20px;
+    background-color:#FED788;
+}
+.line-percentage{
+    background-color: #61AB78;
+    height: 100%;
+    width: 40%;
+    border-radius: 20px;
+}
+.month-dues-scroll {
+  height: 138px;
+  overflow-y: scroll;
+}
+
+.month-dues-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.month-dues-scroll::-webkit-scrollbar-track {
+  background: transparent; /* removes white */
+}
+
+.month-dues-scroll::-webkit-scrollbar-thumb {
+  background-color: #61AB78;
+  border-radius: 6px;
+}
+
+
+/* ----------------------------This Month Committee Owner--------------------------- */
+
+.img-div{ 
+    width:60px;
+    height: 60px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+.img-div img{
+width:100%;
+height:100%;
+}
+.swap-btn{
+    background-color: #D36556;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 20px;
+}
+
+/* ----------------------Committee Status ------------------- */
+.draw-btn{
+    background-color: #D36556;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5px 10px;
+    border-radius: 20px;
+    color:white;
+}
+
+/* ------------------------ Remaining Commiyttee -------------------- */
+.committee-number{
+    background-color: #61AB78;
+    border-radius: 50%;
+    width: 30px;
+    height:30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.remaining-scroll {
+  height: 110px;
+  overflow-y: scroll;
+}
+
+.remaining-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.remaining-scroll::-webkit-scrollbar-track {
+  background: transparent; /* removes white */
+}
+
+.remaining-scroll::-webkit-scrollbar-thumb {
+  background-color: #61AB78;
+  border-radius: 6px;
+}
+

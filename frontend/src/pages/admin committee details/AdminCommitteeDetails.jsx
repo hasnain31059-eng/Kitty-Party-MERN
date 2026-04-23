@@ -288,7 +288,6 @@ function AdminCommitteeDetails() {
                         <th>Member Detail</th>
                         <th>Rating</th>
                         <th>Action</th>
-                        <th>Remove Member</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -330,9 +329,7 @@ function AdminCommitteeDetails() {
                                             ><FiMinus /></button>
                                         </div>
                                     </td>
-                                    <td>
-                                        <button className='mx-auto bg-[#4F9E7D] hover:bg-[#D36556]'>Remove</button>
-                                    </td>
+                                    
                                 </tr>
                             ))
                         )
