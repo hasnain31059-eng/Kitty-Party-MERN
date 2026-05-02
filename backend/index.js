@@ -376,7 +376,7 @@ app.put('/personal-payment', upload.single('payment_img'), async (req, res) => {
         let file = req.file.filename;
         await committee_payment.updateOne({ 'cycle_id': obj.cycle_id }
             ,
-            { $set: { 'payment_type': obj.payment_type, 'payment_status': true, 'approval': true ,'payment_img':file} }
+            { $set: { 'payment_type': obj.payment_type, 'payment_status': true, 'approval': true, 'payment_img': file } }
         )
     }
     res.send("Payment SuccessFul")
@@ -1029,7 +1029,8 @@ app.delete('/delete-committee/:id', async (req, res) => {
             await cycle_biddings.deleteMany({ 'cycle_id': value._id });
             await committee_cycles.deleteOne({ '_id': value._id });
         })
-        await committee_refund.deleteMany({ 'committee_id': committee_id })
+        await committee_refund.deleteMany({ 'committee_id': committee_id });
+        await notificationmodel.deleteMany({committee_id});
         res.send('committee_deleted');
     }
     catch (error) {
@@ -1268,13 +1269,15 @@ app.post('/payment-handle', upload.single('payment_img'), async (req, res) => {
 })
 
 app.put('/approve-payment', async (req, res) => {
-    let obj = req.body;//{cycle_id,member_id,notification_id}
-
-    await committee_payment.updateOne({ 'cycle_id': obj.cycle_id, 'member_id': obj.member_id }, { $set: { 'approval': true } });
-    if (obj.notification_id) {
-        await notificationmodel.deleteOne({ '_id': obj.notification_id });
+    try {
+        let obj = req.body;//{cycle_id,member_id}
+        await committee_payment.updateOne({ 'cycle_id': obj.cycle_id, 'member_id': obj.member_id }, { $set: { 'approval': true } });
+        await notificationmodel.deleteOne({ 'cycle_id':obj.cycle_id,'member_id': obj.member_id, 'notification_type': 4 });
+        res.send('payment approved');
     }
-    res.send('payment approved');
+    catch (error) {
+        console.log(error);
+    }
 })
 
 app.put('/reject-payment', async (req, res) => {

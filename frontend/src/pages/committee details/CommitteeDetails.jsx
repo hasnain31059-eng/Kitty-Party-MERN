@@ -21,6 +21,7 @@ function CommitteeDetails() {
     let handle_exit=()=>{
         axios.post('http://localhost:8080/exit-committee',data).then((res)=>{
             console.log(res.data);
+            navigate('/lobby');
         })        
     }
 

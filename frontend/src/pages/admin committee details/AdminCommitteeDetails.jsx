@@ -15,6 +15,7 @@ function AdminCommitteeDetails() {
     const navigate = useNavigate();
 
     let data = location.state;//contain object of committee detail from shared_committeee_table
+    console.log(data);
     const [all_members, setall_members] = useState([]);// used to update stars
     const [current_cycle_members, setcurrent_cycle_members] = useState([]);
     const [all_cycles, setall_cycles] = useState([]);//[{_id,cycle_number},{}]---committee_cycle_table
