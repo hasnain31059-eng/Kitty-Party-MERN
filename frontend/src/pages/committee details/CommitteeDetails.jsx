@@ -84,7 +84,7 @@ function CommitteeDetails() {
                                     <div className='dues-div-details'>
                                         <div className='flex justify-center items-center'>
                                             <h1 className='mr-5 dues-doller'>$</h1>
-                                            <h1 className='font-medium'>{data.committee_details.amount}</h1>
+                                            <h1 className='font-medium'>{value.amount}</h1>
                                         </div>
                                         <button className='pay-now-btn' onClick={() => {
                                             navigate('/payment', { state: { 'cycle_id': value._id, 'member_id': data._id, 'committee_detail': data.committee_details } })

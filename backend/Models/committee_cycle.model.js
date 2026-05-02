@@ -4,6 +4,9 @@ const committee_cycle_schema=new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:"shared_committees"
     },
+    amount:{
+        type:Number
+    },
     cycle_number:{
         type:Number,
         default:1

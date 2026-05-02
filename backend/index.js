@@ -809,7 +809,14 @@ app.post('/accept-request/:id', async (req, res) => {
 
             //start_date==sd   deadline_date===dd  days_gap===dg   cyclenumber>>number_of_member in committee==cn  
             let calculated_dates = dates_calculator_function(committee_details.start_date, committee_details.deadline_day, committee_details.days_gap, committee_details.number_of_member);
-            const newcycle = new committeecycle({ 'committee_id': data.committee_id, 'cycle_number': committee_details.number_of_member, 'start_date': calculated_dates.start_date, 'end_date': calculated_dates.end_date, 'deadline_date': calculated_dates.deadline_date });
+            const newcycle = new committeecycle({ 
+                'committee_id': data.committee_id,
+                'amount':committee_details.amount,
+                 'cycle_number': committee_details.number_of_member,
+                  'start_date': calculated_dates.start_date, 
+                  'end_date': calculated_dates.end_date, 
+                  'deadline_date': calculated_dates.deadline_date 
+                });
             let ncycle = await newcycle.save();
             //get create payments of all the cycle for new member.
 
@@ -851,13 +858,6 @@ app.delete('/clear-payment-notification/:id', async (req, res) => {
 
 
 //*********************************************** */
-// app.post('/invite-member', async (req, res) => {
-
-// })
-// app.post('/accept-invite', async (req, res) => {
-
-// })
-//
 app.delete('/clear-notification/:id', async (req, res) => {
     try {
         await notificationmodel.deleteOne({ '_id': req.params.id });
