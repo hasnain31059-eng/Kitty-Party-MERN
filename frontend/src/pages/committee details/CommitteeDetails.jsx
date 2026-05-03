@@ -13,18 +13,26 @@ function CommitteeDetails() {
     const location = useLocation();
     const navigate = useNavigate();
     const data = location.state;//this comtain current committee data which i want to see details from lobby [committee_member] join with[sharedcommittee]
-   console.log(data);
+
     const [committee_current_cycle, setcommittee_current_cycle] = useState([]);//contain this committee this month dues. by joining the [committee_cycle],[committee_payments]
-    const [committee_owner_details, setcommittee_owner_details] = useState({});  //joining the [committee_member],[users]
+    const [committee_owner_details, setcommittee_owner_details] = useState({});  //joining the [cycle],[committee_member],[users]
+
     const [remaining_committee_owners, setremaining_committee_owners] = useState([]);
 
-    let handle_exit=()=>{
-        axios.post('http://localhost:8080/exit-committee',data).then((res)=>{
+    let handle_exit = () => {
+        axios.post('http://localhost:8080/exit-committee', data).then((res) => {
             console.log(res.data);
             navigate('/lobby');
-        })        
+        })
     }
 
+    let handle_swap = () => {
+        let swaping_mamber_id=data._id;///joo committee details daak rahaa ha 
+        let winner_member_id=committee_owner_details.member._id;// joo committee jeet gayaa ha.
+        axios.post('http://localhost:8080/swap-winner',{swaping_mamber_id,winner_member_id}).then((res)=>{
+            console.log(res.data);
+        })
+    }
     useEffect(() => {
         let current_date = new Date().toISOString(); //getting current date
 
@@ -126,7 +134,15 @@ function CommitteeDetails() {
                                         </div>
                                     </div>
                                     <div className='flex justify-end'>
-                                        <button className='swap-btn text-sm mx-4'>Swap</button>
+                                        {
+                                            //ma check kr rahaa hoo k member_id jo k committee details daak 
+                                            // rahaa haa eual too nahi ha member_id jis ki committee nikli ha.
+                                            // kyu k member apnaa aap ko hi swap request baj saktaa haa.
+                                            (data._id !== committee_owner_details.member._id) && (
+                                                <button className='swap-btn text-sm mx-4' onClick={handle_swap}>Swap</button>
+                                            )
+                                        }
+
                                     </div>
                                 </>
                             ) :
@@ -212,7 +228,7 @@ function CommitteeDetails() {
                 }
 
                 <button className='bg-[#FB9D57] flex justify-center items-center text-sm px-2 py-1 rounded-xl'
-                onClick={handle_exit}
+                    onClick={handle_exit}
                 >
                     < ImExit />
                     Leave Party

@@ -1574,3 +1574,12 @@ app.get('/get-refund-of-user/:id', async (req, res) => {
     res.send(data);
 })
 
+app.post('/swap-winner',async(req,res)=>{
+ try{
+    let data=req.body;
+    console.log(data);
+ }
+ catch(error){
+    console.log(error);
+ }
+})
