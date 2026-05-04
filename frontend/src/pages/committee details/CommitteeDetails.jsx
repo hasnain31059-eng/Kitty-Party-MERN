@@ -13,10 +13,8 @@ function CommitteeDetails() {
     const location = useLocation();
     const navigate = useNavigate();
     const data = location.state;//this comtain current committee data which i want to see details from lobby [committee_member] join with[sharedcommittee]
-
     const [committee_current_cycle, setcommittee_current_cycle] = useState([]);//contain this committee this month dues. by joining the [committee_cycle],[committee_payments]
     const [committee_owner_details, setcommittee_owner_details] = useState({});  //joining the [cycle],[committee_member],[users]
-
     const [remaining_committee_owners, setremaining_committee_owners] = useState([]);
 
     let handle_exit = () => {
@@ -27,10 +25,17 @@ function CommitteeDetails() {
     }
 
     let handle_swap = () => {
-        let swaping_mamber_id=data._id;///joo committee details daak rahaa ha 
-        let winner_member_id=committee_owner_details.member._id;// joo committee jeet gayaa ha.
-        axios.post('http://localhost:8080/swap-winner',{swaping_mamber_id,winner_member_id}).then((res)=>{
-            console.log(res.data);
+        let swaping_member_id = data._id;///joo committee details daak rahaa ha jis committe nahi mili.
+        let winner_member_id = committee_owner_details.member._id;// joo committee jeet gayaa ha.
+        let committee_id = data.committee_id;
+        let cycle_id=committee_owner_details._id;
+        axios.post('http://localhost:8080/swap-request', {
+            swaping_member_id,
+            winner_member_id,
+            committee_id,
+            cycle_id
+        }).then((res) => {
+            alert(res.data);
         })
     }
     useEffect(() => {

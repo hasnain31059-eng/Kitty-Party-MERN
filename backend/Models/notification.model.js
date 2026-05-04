@@ -18,7 +18,10 @@ const notificationSchema=new mongoose.Schema({
         default:1
     },
     member_id:{
-        type:mongoose.Types.ObjectId   //this is only used for payment notification
+        type:mongoose.Types.ObjectId   //this is used for payment notification
+    },
+    cycle_winner_member_id:{
+         type:mongoose.Types.ObjectId   //this is used in swaping notification.
     },
     amount:{
         type:Number

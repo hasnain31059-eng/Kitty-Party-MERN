@@ -809,14 +809,14 @@ app.post('/accept-request/:id', async (req, res) => {
 
             //start_date==sd   deadline_date===dd  days_gap===dg   cyclenumber>>number_of_member in committee==cn  
             let calculated_dates = dates_calculator_function(committee_details.start_date, committee_details.deadline_day, committee_details.days_gap, committee_details.number_of_member);
-            const newcycle = new committeecycle({ 
+            const newcycle = new committeecycle({
                 'committee_id': data.committee_id,
-                'amount':committee_details.amount,
-                 'cycle_number': committee_details.number_of_member,
-                  'start_date': calculated_dates.start_date, 
-                  'end_date': calculated_dates.end_date, 
-                  'deadline_date': calculated_dates.deadline_date 
-                });
+                'amount': committee_details.amount,
+                'cycle_number': committee_details.number_of_member,
+                'start_date': calculated_dates.start_date,
+                'end_date': calculated_dates.end_date,
+                'deadline_date': calculated_dates.deadline_date
+            });
             let ncycle = await newcycle.save();
             //get create payments of all the cycle for new member.
 
@@ -1030,7 +1030,7 @@ app.delete('/delete-committee/:id', async (req, res) => {
             await committee_cycles.deleteOne({ '_id': value._id });
         })
         await committee_refund.deleteMany({ 'committee_id': committee_id });
-        await notificationmodel.deleteMany({committee_id});
+        await notificationmodel.deleteMany({ committee_id });
         res.send('committee_deleted');
     }
     catch (error) {
@@ -1272,7 +1272,7 @@ app.put('/approve-payment', async (req, res) => {
     try {
         let obj = req.body;//{cycle_id,member_id}
         await committee_payment.updateOne({ 'cycle_id': obj.cycle_id, 'member_id': obj.member_id }, { $set: { 'approval': true } });
-        await notificationmodel.deleteOne({ 'cycle_id':obj.cycle_id,'member_id': obj.member_id, 'notification_type': 4 });
+        await notificationmodel.deleteOne({ 'cycle_id': obj.cycle_id, 'member_id': obj.member_id, 'notification_type': 4 });
         res.send('payment approved');
     }
     catch (error) {
@@ -1574,12 +1574,54 @@ app.get('/get-refund-of-user/:id', async (req, res) => {
     res.send(data);
 })
 
-app.post('/swap-winner',async(req,res)=>{
- try{
-    let data=req.body;
-    console.log(data);
- }
- catch(error){
-    console.log(error);
- }
+app.post('/swap-request', async (req, res) => {
+    try {
+        let data = req.body;
+        //{swaping_member_id    is ko committee chiyaa.
+        // ,winner_member_id,   joo committee jeet gayaa ha.
+        // committee_id,
+        //cycle_id        jis cycle ka winner swap krnaa haa.
+        //}
+
+        //1:sub sa palaa ma notification send karoo ga jis ko committee mili haa.
+        let winner_user_id=await committee_members.findById(data.winner_member_id,"user_id");
+        //2.jo switch krnaa chataa ha is ki details notification ma show krnaa k lia.
+        let temp=await committee_members.aggregate([
+            {
+                $match:{
+                    '_id':new mongoose.Types.ObjectId(data.swaping_member_id)
+                }
+            }
+            ,
+            {
+                $lookup:{
+                    from:'users',
+                    localField:'user_id',
+                    foreignField:'_id',
+                    as:'user_detail'
+                }
+            }
+            ,
+            {
+                $unwind:'$user_detail'
+            }
+        ])
+
+
+        let new_notif=new notificationmodel({
+            'receiver_id':winner_user_id,//is ko committee mili hoi haa.
+            'committee_id':data.committee_id,
+            'user':temp[0].user_detail, // is ka name show kroo ga notification ma 
+            'member_id':data.swaping_member_id,//is ko committee chiyaa
+            'cycle_winner_member_id':data.winner_member_id,
+            'cycle_id':data.cycle_id,
+            'notification_type':10
+        })
+
+        await new_notif.save();
+        res.send("Request Sent");
+    }
+    catch (error) {
+        console.log(error);
+    }
 })
