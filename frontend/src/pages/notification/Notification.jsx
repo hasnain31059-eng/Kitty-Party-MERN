@@ -7,9 +7,10 @@ import axios from 'axios'
 function Notification() {
     const location = useLocation();
     const [all_notifications, setall_notifications] = useState([]);
+    console.log(all_notifications)
     const [payment_type, setpayment_type] = useState('cash');//used in notification no 6 and 8.
     const [return_img, setreturn_img] = useState('');
-    const navigate=useNavigate();
+    const navigate = useNavigate();
     let handlereject = async (notification_id, receiver_id, committee_id) => {
         await axios.post(`http://localhost:8080/reject-request/${notification_id}`, { receiver_id, committee_id, 'notification_type': 2 });
         getall_notifications();
@@ -47,6 +48,7 @@ function Notification() {
         })
     }
 
+
     let handlereturn = (notification_obj) => {
         const formdata = new FormData();
         formdata.append('committee_id', notification_obj.committee_id);
@@ -55,12 +57,32 @@ function Notification() {
         formdata.append('message', notification_obj.message) //message for admin what he do to amount
         formdata.append('committee_admin_id', notification_obj.committee_detail.admin_id);
         formdata.append('amount', notification_obj.amount);
-        formdata.append('payment_img',return_img);
+        formdata.append('payment_img', return_img);
 
-        axios.put('http://localhost:8080/pay-refund',formdata).then((res)=>{
+        axios.put('http://localhost:8080/pay-refund', formdata).then((res) => {
             alert(res.data);
         })
         navigate('/lobby');
+    }
+
+
+    let acceptSwap = (commitee_id, cycle_id, member_id, cycle_winner_member_id, notification_id) => {
+        //receiver_member_id        jis ko chiyaa.
+        //winner_member_id          jis k pass committee haa
+
+       console.log({commitee_id, cycle_id, member_id, cycle_winner_member_id, notification_id})
+        axios.put('http://localhost:8080/swap-accepted', { commitee_id, cycle_id, member_id, cycle_winner_member_id, notification_id}).then((res) => {
+            alert(res.data);
+            getall_notifications();
+        })
+    }
+
+    let rejectSwap = (receiver_id, committee_id, notification_id) => {
+        //receiver_id who dont got the committe and swap request rejecetd this is user_id of receiver.
+        axios.post('http://localhost:8080/swap-reject', { receiver_id, committee_id, notification_id }).then((res) => {
+            console.log(res.data);
+            getall_notifications();
+        })
     }
 
     useEffect(() => {
@@ -223,8 +245,8 @@ function Notification() {
                                     {
                                         payment_type === 'online' && (
                                             <div>
-                                                <input type='file' className='bg-[#297a43e5] w-45 rounded-2xl px-2 py-1 my-2 text-white hover:bg-[#cc5040]' onChange={(e)=>{
-                                                    let file=e.target.files[0];
+                                                <input type='file' className='bg-[#297a43e5] w-45 rounded-2xl px-2 py-1 my-2 text-white hover:bg-[#cc5040]' onChange={(e) => {
+                                                    let file = e.target.files[0];
                                                     setreturn_img(file);
                                                 }} />
                                             </div>
@@ -233,7 +255,7 @@ function Notification() {
                                     <div className='flex justify-end pr-7'>
                                         <button className='bg-[#D36556]  px-2 py-1 mx-2 rounded-2xl hover:bg-[#2f884be3] text-white'
                                             onClick={() => handlereturn(value)} >PayNow</button>
-                                          <button className='bg-[#D36556]  px-2 py-1 mx-2 rounded-2xl hover:bg-[#2f884be3] text-white' onClick={() => clear_payment_notification(value._id)}>Clear</button>
+                                        <button className='bg-[#D36556]  px-2 py-1 mx-2 rounded-2xl hover:bg-[#2f884be3] text-white' onClick={() => clear_payment_notification(value._id)}>Clear</button>
                                     </div>
                                 </div>
                             )
@@ -296,6 +318,61 @@ function Notification() {
                                     <p>has return Amount: {value.amount}</p>
                                     <p>Message</p>
                                     <p>{value.message}</p>
+                                </div>
+                            )
+
+                            case 10: return (
+
+                                <div className='notification_div my-2 rounded-2xl p-2  sm:mx-auto ' key={value._id}>
+                                    <div className='text-sm'>
+                                        <div className='flex justify-evenly'>
+                                            <div className='profile w-15'>
+                                                <img src={value.user.profile_img} alt="profile_img" />
+                                            </div>
+                                            <div>
+                                                <div className='stars'>
+                                                    {
+                                                        [...Array(Number(value.user.rating))].map((value, index) => (
+                                                            <img src='/Global/star.png' key={index} />
+                                                        ))
+                                                    }
+                                                </div>
+                                                <h1>{value.user._id}</h1>
+                                                <h1>{value.user.name}</h1>
+                                                <h1>PhoneNo: {value.user.phoneno}</h1>
+                                            </div>
+                                        </div>
+                                        <div className='text-center'>
+                                            <p className='font-medium'>{value.user.name} wants the you swap committee in</p>
+                                            <p>Committee Id: {value.committee_id}</p>
+                                        </div>
+                                        <div className='flex justify-evenly my-2'>
+                                            <button className='bg-[#61AB78] px-3 py-1 rounded-2xl hover:bg-[#2f884b] text-white'
+                                                onClick={() => rejectSwap(value.user._id, value.committee_id, value._id)}>Reject</button>
+                                            <button className='bg-[#D36556] px-3 py-1 rounded-2xl hover:bg-[#cc5040] text-white'
+                                                onClick={() => acceptSwap(
+                                                    value.committee_id,
+                                                    value.cycle_id,
+                                                    value.member_id,
+                                                    value.cycle_winner_member_id,
+                                                    value._id
+                                                )}>Accept</button>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            )
+
+
+
+                            case 11: return (
+                                <div className='notification_div my-2 rounded-2xl p-2  sm:mx-auto text-sm text-center' key={value._id}>
+                                    <p>Your request to Swap committee has been <span className='font-medium'>rejected</span> in</p>
+                                    <p>committee Id:{value.committee_id}</p>
+                                    <div className='flex justify-evenly my-2'>
+                                        <button className='bg-[#D36556] px-3 py-1 rounded-2xl hover:bg-[#cc5040] text-white'
+                                            onClick={() => clear_payment_notification(value._id)}>Clear</button>
+                                    </div>
                                 </div>
                             )
 

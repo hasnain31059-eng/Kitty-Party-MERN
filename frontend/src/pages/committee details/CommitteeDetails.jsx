@@ -28,7 +28,8 @@ function CommitteeDetails() {
         let swaping_member_id = data._id;///joo committee details daak rahaa ha jis committe nahi mili.
         let winner_member_id = committee_owner_details.member._id;// joo committee jeet gayaa ha.
         let committee_id = data.committee_id;
-        let cycle_id=committee_owner_details._id;
+        let cycle_id = committee_owner_details._id;
+     
         axios.post('http://localhost:8080/swap-request', {
             swaping_member_id,
             winner_member_id,
@@ -36,6 +37,13 @@ function CommitteeDetails() {
             cycle_id
         }).then((res) => {
             alert(res.data);
+        })
+    }
+
+    let remaining_committee_members = () => {
+        axios.get(`http://localhost:8080/remaining-members/${data.committee_id}`).then((res) => {
+            setremaining_committee_owners(res.data);
+            console.log(res.data);
         })
     }
     useEffect(() => {
@@ -47,11 +55,8 @@ function CommitteeDetails() {
         axios.post('http://localhost:8080/current-cycle-committee-winner', { 'today': current_date, 'committee_id': data.committee_id }).then((res) => {
             setcommittee_owner_details(res.data);
         })
+        remaining_committee_members();
 
-        axios.get(`http://localhost:8080/remaining-members/${data.committee_id}`).then((res) => {
-            setremaining_committee_owners(res.data);
-
-        })
     }, [])
     return (
         <>

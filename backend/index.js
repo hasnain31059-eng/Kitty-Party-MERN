@@ -693,7 +693,6 @@ app.get('/remaining-members/:id', async (req, res) => {
                 }
             },
 
-
             {
                 $lookup: {
                     from: 'users',
@@ -1583,41 +1582,44 @@ app.post('/swap-request', async (req, res) => {
         //cycle_id        jis cycle ka winner swap krnaa haa.
         //}
 
+
         //1:sub sa palaa ma notification send karoo ga jis ko committee mili haa.
-        let winner_user_id=await committee_members.findById(data.winner_member_id,"user_id");
+        let winner_user_id = await committee_members.findById(data.winner_member_id, "user_id");
+
         //2.jo switch krnaa chataa ha is ki details notification ma show krnaa k lia.
-        let temp=await committee_members.aggregate([
+        let temp = await committee_members.aggregate([
             {
-                $match:{
-                    '_id':new mongoose.Types.ObjectId(data.swaping_member_id)
+                $match: {
+                    '_id': new mongoose.Types.ObjectId(data.swaping_member_id)
                 }
             }
             ,
             {
-                $lookup:{
-                    from:'users',
-                    localField:'user_id',
-                    foreignField:'_id',
-                    as:'user_detail'
+                $lookup: {
+                    from: 'users',
+                    localField: 'user_id',
+                    foreignField: '_id',
+                    as: 'user_detail'
                 }
             }
             ,
             {
-                $unwind:'$user_detail'
+                $unwind: '$user_detail'
             }
         ])
 
 
-        let new_notif=new notificationmodel({
-            'receiver_id':winner_user_id,//is ko committee mili hoi haa.
-            'committee_id':data.committee_id,
-            'user':temp[0].user_detail, // is ka name show kroo ga notification ma 
-            'member_id':data.swaping_member_id,//is ko committee chiyaa
-            'cycle_winner_member_id':data.winner_member_id,
-            'cycle_id':data.cycle_id,
-            'notification_type':10
+        let new_notif = new notificationmodel({
+            'receiver_id': winner_user_id.user_id,//is ko committee mili hoi haa.
+            'committee_id': data.committee_id,
+            'user': temp[0].user_detail, // is ka name show kroo ga notification ma 
+            'member_id': data.swaping_member_id,//is ko committee chiyaa
+            'cycle_winner_member_id': data.winner_member_id,//is k pass comittee haa.
+            'cycle_id': data.cycle_id,
+            'notification_type': 10
         })
 
+       
         await new_notif.save();
         res.send("Request Sent");
     }
@@ -1625,3 +1627,50 @@ app.post('/swap-request', async (req, res) => {
         console.log(error);
     }
 })
+
+app.post('/swap-reject', async (req, res) => {
+    try {
+        let data = req.body;
+        //{
+        //recever_id     who dont got the committee and whose swap request is rejected this is user_id.
+        //committee_id   
+        //notification_id   jis na swap request baji this uss k notification delete krnaa ha iss sa 
+        //}
+
+        await notificationmodel.deleteOne({ '_id': data.notification_id });
+
+        let new_noti = new notificationmodel({
+            'receiver_id': data.receiver_id,
+            'committee_id': data.committee_id,
+            'notification_type': 11
+        })
+
+        await new_noti.save();
+
+        res.send("Swap Rejected Successfully");
+    }
+    catch (error) {
+        console.log(error)
+    }
+
+})
+
+app.put('/swap-accepted', async (req, res) => {
+    try {
+        let data = req.body;
+        //{cycle_winner_member_id             jis ko committee mili hoi ha
+        //member_id            jis ko committee chiyaa.
+        //committee_id,cycle_id  }
+        console.log(data);
+        //1st i change that person winning
+        await committee_members.updateOne({ '_id':new mongoose.Types.ObjectId( data.cycle_winner_member_id)}, { $set: { 'got_the_committee': false } });
+        await committee_members.updateOne({ '_id':new mongoose.Types.ObjectId( data.member_id )}, { $set: { 'got_the_committee': true } });
+        await committee_cycles.updateOne({ '_id': data.cycle_id }, { $set: { 'cycle_winner_id': data.member_id } });
+        await notificationmodel.deleteOne({"_id":data.notification_id});
+        res.send("Swap Successful")
+    } catch (error) {
+        console.log(error)
+    }
+
+})
+
