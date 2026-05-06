@@ -148,7 +148,7 @@ function CommitteeDetails() {
                                             //ma check kr rahaa hoo k member_id jo k committee details daak 
                                             // rahaa haa eual too nahi ha member_id jis ki committee nikli ha.
                                             // kyu k member apnaa aap ko hi swap request baj saktaa haa.
-                                            (data._id !== committee_owner_details.member._id) && (
+                                            (data._id !== committee_owner_details.member._id && data.got_the_committee!== true) && (
                                                 <button className='swap-btn text-sm mx-4' onClick={handle_swap}>Swap</button>
                                             )
                                         }
