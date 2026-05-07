@@ -830,7 +830,7 @@ app.post('/accept-request/:id', async (req, res) => {
 
             //create payment of all members with the ids of previous members.
 
-            let array_of_already_joined_committee = await committeemember.find({ '_id': { $ne: nmember.id }, 'active': true });
+            let array_of_already_joined_committee = await committeemember.find({ '_id': { $ne: nmember.id },'committee_id':data.committee_id ,'active': true });
             //now i will create payment to all already joined memeber of new cycle except that one that i currently saved
             //beacuse i have already created all the payment of his.
 

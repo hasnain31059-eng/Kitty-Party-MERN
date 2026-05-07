@@ -15,7 +15,6 @@ function AdminCommitteeDetails() {
     const navigate = useNavigate();
 
     let data = location.state;//contain object of committee detail from shared_committeee_table
-    console.log(data);
     const [all_members, setall_members] = useState([]);// used to update stars
     const [current_cycle_members, setcurrent_cycle_members] = useState([]);
     const [all_cycles, setall_cycles] = useState([]);//[{_id,cycle_number},{}]---committee_cycle_table
@@ -47,15 +46,17 @@ function AdminCommitteeDetails() {
     }
 
     let get_member_of_cycle = (cycle_number, all_cycles) => {
-        let current_cycle_id;
+        let current_cycle_id;   ////idr ma cycle number saa cycle id nikaloo ga joo k saraa
+        //  cycle manaa all_cycles ma dall dia thaa jis ma 1 array haa uss ma cycle_id aur
+        //  cycle_number haa.
         all_cycles.forEach((value, _) => {
             if (Number(value.cycle_number) === Number(cycle_number)) {
                 current_cycle_id = value._id
             }
         })
 
+
         axios.get(`http://localhost:8080/get-payment-of-cycle/${current_cycle_id}`).then((res) => {
-            // console.log(res.data);
             setcurrent_cycle_members(res.data); //contain 3 tables data committee_payemnt  committee_member users
         })
 
@@ -128,11 +129,12 @@ function AdminCommitteeDetails() {
             setall_members(res.data);
         })
         axios.get(`http://localhost:8080/all-cycle-till-now-committee/${data._id}`).then((res) => {
-            const fetchedData = res.data;
+            const fetchedData = res.data;///this is used to get cycle_id and cycle number by using committee_id
+
             setall_cycles(fetchedData);
             if (fetchedData.length > 0) {
-                const lastCycle = fetchedData.length;
-                setcurrent_cycle(lastCycle);
+                const lastCycle = fetchedData.length; ///is ma maa saraa cycle maa sa last cycle nikaloo ga
+                setcurrent_cycle(lastCycle);//yaa dropdown maa show hoo ga.
                 get_member_of_cycle(lastCycle, fetchedData);//this contain both current cycle number and all cycles data{_id,cycle_number}
             }
 
@@ -330,7 +332,7 @@ function AdminCommitteeDetails() {
                                             ><FiMinus /></button>
                                         </div>
                                     </td>
-                                    
+
                                 </tr>
                             ))
                         )
