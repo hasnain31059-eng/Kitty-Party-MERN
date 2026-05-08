@@ -7,7 +7,6 @@ import axios from 'axios'
 function Notification() {
     const location = useLocation();
     const [all_notifications, setall_notifications] = useState([]);
-    console.log(all_notifications)
     const [payment_type, setpayment_type] = useState('cash');//used in notification no 6 and 8.
     const [return_img, setreturn_img] = useState('');
     const navigate = useNavigate();
