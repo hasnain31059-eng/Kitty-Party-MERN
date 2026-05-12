@@ -1318,7 +1318,8 @@ app.post('/exit-committee', async (req, res) => {
         const committee_id = data.committee_id;
         const user_id = data.user_id;
         const member_id = data._id;
-
+        
+        
         // Convert to Number to ensure "1" === 1 doesn't fail
         const committee_leaving_type = Number(data.committee_details?.committee_leaving_type);
         const member_got_committee = data.got_the_committee;
@@ -1479,6 +1480,7 @@ app.post('/exit-committee', async (req, res) => {
                 payment_status: false
             });
         }
+        await cycle_biddings.deleteMany({'member_id':member_id});
 
         res.status(200).send("Exit Successful");
 

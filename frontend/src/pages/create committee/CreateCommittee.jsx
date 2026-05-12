@@ -23,6 +23,7 @@ function CreateKitty() {
 
     let gg = (e) => {
         e.preventDefault();
+
         if (rawdata.saving_type === '1') {
             const personalcommittee = {
                 committee_admin_id: committee_admin_details.userid,//i am sending with this in backend i will saperate this for member table (admin)
@@ -50,6 +51,9 @@ function CreateKitty() {
             })
         }
         else {
+
+
+
             let sharedcommittee = {
                 admin_id: committee_admin_details.userid, //i am sending with this in backend i will saperate this for member table (admin)
                 committee_name: rawdata.committee_name,
@@ -61,22 +65,27 @@ function CreateKitty() {
                 committee_type: rawdata.committee_type,
                 members_arrange_type: rawdata.members_arrange_type
             }
-            // console.log(sharedcommittee);
-            axios.post('http://localhost:8080/shared-committee', sharedcommittee).then((res) => {
-                if (res.data === 'Committee Created') {
-                    setrawdata({
-                        committee_name: "", amount: "", start_date: "",
-                        days_gap: "", deadline_day: "", saveing_type: "2", total_cycle: "",
-                        committee_type: "1", members_arrange_type: "2"
-                    })
-                    alert(res.data);
-                    navigate('/lobby');
-                }
-                else {
-                    alert('committee Not Created');
-                    console.log(res.data);
-                }
-            })
+            if (sharedcommittee.days_gap > sharedcommittee.deadline_day) {
+                axios.post('http://localhost:8080/shared-committee', sharedcommittee).then((res) => {
+                    if (res.data === 'Committee Created') {
+                        setrawdata({
+                            committee_name: "", amount: "", start_date: "",
+                            days_gap: "", deadline_day: "", saveing_type: "2", total_cycle: "",
+                            committee_type: "1", members_arrange_type: "2"
+                        })
+                        alert(res.data);
+                        navigate('/lobby');
+                    }
+                    else {
+                        alert('committee Not Created');
+                        console.log(res.data);
+                    }
+                })
+            }
+            else {
+                alert("Days Gap must be Greater then DeadLine Date");
+            }
+
         }
 
     }
@@ -88,11 +97,11 @@ function CreateKitty() {
                 <h1 className="font-medium text-2xl my-3">Create Committee</h1>
                 <div className="outer-form px-2 py-4">
                     <form onSubmit={gg} className="inner-form grid grid-cols-1 gap-2 sm:grid-cols-2">
-                        <input name='committee_name' onChange={handelchange} className="inner-form-text-input" type='text' placeholder='Committee Name' required/>
-                        <input name='amount' onChange={handelchange} className="inner-form-text-input" type='text' placeholder='Amount' required/>
-                        <input name='start_date' onChange={handelchange} className="inner-form-text-input" type='date' placeholder='Start date'  min={new Date().toISOString().split("T")[0]} required/>
-                        <input name='days_gap' onChange={handelchange} className="inner-form-text-input" type='number' placeholder='Days Gap' required/>
-                        <input name='deadline_day' onChange={handelchange} className="inner-form-text-input" type='number' placeholder='DeadLine At' required/>
+                        <input name='committee_name' onChange={handelchange} className="inner-form-text-input" type='text' placeholder='Committee Name' required />
+                        <input name='amount' onChange={handelchange} className="inner-form-text-input" type='text' placeholder='Amount' required />
+                        <input name='start_date' onChange={handelchange} className="inner-form-text-input" type='date' placeholder='Start date' min={new Date().toISOString().split("T")[0]} required />
+                        <input name='days_gap' onChange={handelchange} className="inner-form-text-input" type='number' placeholder='Days Gap' min={1} required />
+                        <input name='deadline_day' onChange={handelchange} className="inner-form-text-input" type='number' placeholder='DeadLine At' min={0} required />
                         <div className="radio-div px-5  sm:row-span-2">
                             <div><h1 className="font-medium">Committee Saving Type</h1></div>
                             <div className="flex items-center">
