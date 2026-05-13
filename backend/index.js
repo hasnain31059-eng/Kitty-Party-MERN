@@ -1325,13 +1325,18 @@ app.post('/exit-committee', async (req, res) => {
         const member_got_committee = data.got_the_committee;
 
         // 2. Fetch required details 
-        const committee_admin_details = await usermodel.findOne({ _id: data.committee_details.admin_id });
+        const committee_admin_details = await usermodel.findOne({ _id: data.committee_details.admin_id });//to send notification of exit.
         const committee_exitter_details = await usermodel.findOne({ _id: user_id });
 
+
+
+
         const number_of_cycle_paid = await committee_payment.countDocuments({
-            member_id: member_id,
+            member_id: member_id,   ///jo exit kr rahaa ha uss na  kitnaa cycle pay kiaa.
             approval: true
         });
+
+
 
         const return_amount = number_of_cycle_paid * Number(data.committee_details.amount);
 
