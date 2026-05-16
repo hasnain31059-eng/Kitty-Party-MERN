@@ -224,11 +224,11 @@ app.put('/update-user/:id', upload.single('profile_img'), async (req, res) => {
 //////////////////////////////Create Committee Pages/////////////////////////////////
 /////////////////////////////////////////////////////personal Committee/////////////////////////////////////
 
-app.post('/personal-committee', async (req, res) => {
+app.post('/personal-committee', async (req, res) => {//iss ma personal committee create ho gi
     try {
         let data = req.body;//{committee_admin_id,committee_name,amount,start_date,days_gap,deadline_day,total_cycle}
-
-        // SAVE the committee first
+        
+        //1 palaa manaa jo committee li haa usersa us ko personal committee table maa save karoo ga.
         const newpersonalcommittee = new personalCommittee(data);
         let pcommittee = await newpersonalcommittee.save();
 
@@ -240,14 +240,15 @@ app.post('/personal-committee', async (req, res) => {
         const totalCycles = Number(data.total_cycle);
 
         for (let i = 0; i < totalCycles; i++) {
+            //2 ab jo cheezaa committee ki database ma dalii ha 1,1 kr k next dates calculate kroo ga.
             let date_data = dates_calculator_function(
                 startDate, // Pass the Date Object here
                 deadlineDays,
                 daysGap,
-                i + 1
+                i + 1 //cycle number
             );
             let new_cycle;
-            if (i === totalCycles - 1) {//check the cycle is last cycle
+            if (i === totalCycles - 1) {//check the cycle is last cycle agr last walaa hoaa to else chalaa ga.to exit the loop.
                 new_cycle = new committee_cycles({
                     'committee_id': pcommittee._id,
                     'cycle_number': i,
@@ -267,6 +268,8 @@ app.post('/personal-committee', async (req, res) => {
                 });
             }
             let current_cycle = await new_cycle.save();
+
+            //3 ab joo manaa cycle create kiaa ha ab uss ki payment bhi create kroo ga jo k payment table ma save ho gi.
             let newcommittee_payment = new committee_payment({
                 'cycle_id': current_cycle._id,
                 'member_id': data.committee_admin_id
@@ -281,7 +284,7 @@ app.post('/personal-committee', async (req, res) => {
 });
 
 app.get('/all-personal-committees/:id', async (req, res) => {
-    try {
+    try {//user ki sari personal committees find kr rahaa hoo
         let _id = req.params.id //user_id;
         let data = await personalCommittee.find({ 'committee_admin_id': _id });
         res.send(data);
@@ -291,12 +294,12 @@ app.get('/all-personal-committees/:id', async (req, res) => {
     }
 })
 
-app.get('/get-current-personal-cycle/:id', async (req, res) => {
-    let committee_id = req.params;
-    const today = new Date();
+app.get('/get-current-personal-cycle/:id', async (req, res) => {//is ma personal committee jis ki id maraa pass ha uss ka current month joo chal rahaa ha woo uss ki payment find kr rahaa ho
+    let committee_id = req.params;//jis committee ki current payemnt month find kr rahaa ho
+    const today = new Date();//iss saa aaj ki date pataa chaalaa gi jis sa match kr k low ga data.
     today.setUTCHours(0, 0, 0, 0);
-    let data = await committee_cycles.aggregate([
-        {
+    let data = await committee_cycles.aggregate([ //committee_cycle
+        {//palaa ma woo walaaa cycle laaa k aow gaa.jis js k ander current date haa.
             $match: {
                 'committee_id': new mongoose.Types.ObjectId(committee_id),
                 'start_date': { $lte: today },
@@ -304,7 +307,7 @@ app.get('/get-current-personal-cycle/:id', async (req, res) => {
             }
         }
         ,
-        {
+        {// join kroo ga payment table k sat
             $lookup: {
                 from: 'committee_payments',
                 localField: '_id',
@@ -316,7 +319,7 @@ app.get('/get-current-personal-cycle/:id', async (req, res) => {
             $unwind: "$cycle_payment_details"
         }
         ,
-        {
+        {//phr woo walaa select kroo ga joo k pay nahi kia.
             $match: {
                 "cycle_payment_details.payment_status": false
             }
@@ -335,7 +338,7 @@ app.get('/verify-ending-date/:id', async (req, res) => {
     res.send('Committee End Soon');
 })
 app.delete('/leave-personal-committee/:id', async (req, res) => {
-    try {
+    try {//used to delete personal committee data if a person leave the committee
         const committee_id = req.params.id;
 
         // 1. Find all cycles belonging to this committee to get their IDs
@@ -395,7 +398,7 @@ let dates_calculator_function = (sd, dd, dg, cn) => {
 
 }
 app.post('/shared-committee', async (req, res) => {
-    try {
+    try {//create new shared committee
         let data = req.body;
         //creating shared committee
         const newsharedcommittee = new sharedCommittee(data);
@@ -411,7 +414,7 @@ app.post('/shared-committee', async (req, res) => {
 
 /////////////////////////////////////////      invite-Member      ///////////////////////////
 app.get('/invite-member/:phoneno', async (req, res) => {
-    try {
+    try {///find person to invite him to join the committee.
         let number = req.params.phoneno;
         let singleuser = await usermodel.findOne({ 'phoneno': number });
         res.send(singleuser);
@@ -460,7 +463,7 @@ app.get('/get-all-joined-committees/:id', async (req, res) => {
 
 })
 app.get('/get-all-committees-of-admin/:id', async (req, res) => {
-    let id = req.params.id;
+    let id = req.params.id; //woo committee laa k aow jis ka admin yaa bandaa haa id.
     let data = await sharedcommittees.find({ 'admin_id': id });
     res.send(data);
 })
@@ -470,7 +473,7 @@ app.get('/get-all-committees-of-admin/:id', async (req, res) => {
 app.post('/this-month-dues', async (req, res) => {
     const today = new Date(req.body.today);
     today.setUTCHours(0, 0, 0, 0);
-
+    //sari payments find karr rahaa hoo of committee_id jis ka member_id yaa haa.
     const committee_id = new mongoose.Types.ObjectId(req.body.committee_id);
     const member_id = new mongoose.Types.ObjectId(req.body.committee_member_id);//joining the committee_cycle_table with the comittee_payments_table.
 
@@ -721,6 +724,7 @@ app.get('/remaining-members/:id', async (req, res) => {
 ////////////////////////////////////////////////   join Committee   //////////////////////////////////////////////////
 
 app.get('/committee-of-this-no/:number', async (req, res) => {
+    ///show a person committee whose is admin on this number .this api is used by other user to request admin to join their committee.
     let phoneno = req.params.number;
     let data = await usermodel.aggregate([
         {
@@ -759,7 +763,7 @@ app.post('/create-notification', async (req, res) => {
 })
 
 app.get('/all-notifications', async (req, res) => {
-    try {
+    try {// get all the notification by using phonno in jwt of current login profile.
         let cookie = req.cookies.phoneno;
         let decode = jwt.verify(cookie, 'shhh');
         let phoneno = decode.phoneno;
@@ -850,9 +854,14 @@ app.post('/accept-request/:id', async (req, res) => {
 })
 //*******************   used when handle payment notification     ************************/
 app.delete('/clear-payment-notification/:id', async (req, res) => {
+    try{
     let notification_id = req.params.id;
     await notificationmodel.deleteOne({ '_id': notification_id });
     res.send('Notification Cleared')
+    }
+    catch(error){
+        console.log(error);
+    }
 })
 
 
