@@ -18,6 +18,9 @@ import committee_members from './Models/committee_member.model.js'
 import cycle_biddings from './Models/cycle_bidding.model.js'
 import users from './Models/user.model.js'
 import committee_refund from './Models/committee_refund.model.js'
+import admin_rating_model from './Models/admin_rating.model.js'
+import admin_ratings from './Models/admin_rating.model.js'
+
 
 
 const app = express();
@@ -227,7 +230,7 @@ app.put('/update-user/:id', upload.single('profile_img'), async (req, res) => {
 app.post('/personal-committee', async (req, res) => {//iss ma personal committee create ho gi
     try {
         let data = req.body;//{committee_admin_id,committee_name,amount,start_date,days_gap,deadline_day,total_cycle}
-        
+
         //1 palaa manaa jo committee li haa usersa us ko personal committee table maa save karoo ga.
         const newpersonalcommittee = new personalCommittee(data);
         let pcommittee = await newpersonalcommittee.save();
@@ -834,7 +837,7 @@ app.post('/accept-request/:id', async (req, res) => {
 
             //create payment of all members with the ids of previous members.
 
-            let array_of_already_joined_committee = await committeemember.find({ '_id': { $ne: nmember.id },'committee_id':data.committee_id ,'active': true });
+            let array_of_already_joined_committee = await committeemember.find({ '_id': { $ne: nmember.id }, 'committee_id': data.committee_id, 'active': true });
             //now i will create payment to all already joined memeber of new cycle except that one that i currently saved
             //beacuse i have already created all the payment of his.
 
@@ -854,12 +857,12 @@ app.post('/accept-request/:id', async (req, res) => {
 })
 //*******************   used when handle payment notification     ************************/
 app.delete('/clear-payment-notification/:id', async (req, res) => {
-    try{
-    let notification_id = req.params.id;
-    await notificationmodel.deleteOne({ '_id': notification_id });
-    res.send('Notification Cleared')
+    try {
+        let notification_id = req.params.id;
+        await notificationmodel.deleteOne({ '_id': notification_id });
+        res.send('Notification Cleared')
     }
-    catch(error){
+    catch (error) {
         console.log(error);
     }
 })
@@ -1327,8 +1330,8 @@ app.post('/exit-committee', async (req, res) => {
         const committee_id = data.committee_id;
         const user_id = data.user_id;
         const member_id = data._id;
-        
-        
+
+
         // Convert to Number to ensure "1" === 1 doesn't fail
         const committee_leaving_type = Number(data.committee_details?.committee_leaving_type);
         const member_got_committee = data.got_the_committee;
@@ -1494,7 +1497,7 @@ app.post('/exit-committee', async (req, res) => {
                 payment_status: false
             });
         }
-        await cycle_biddings.deleteMany({'member_id':member_id});
+        await cycle_biddings.deleteMany({ 'member_id': member_id });
 
         res.status(200).send("Exit Successful");
 
@@ -1635,7 +1638,7 @@ app.post('/swap-request', async (req, res) => {
             'notification_type': 10
         })
 
-       
+
         await new_notif.save();
         res.send("Request Sent");
     }
@@ -1679,10 +1682,10 @@ app.put('/swap-accepted', async (req, res) => {
         //committee_id,cycle_id  }
         console.log(data);
         //1st i change that person winning
-        await committee_members.updateOne({ '_id':new mongoose.Types.ObjectId( data.cycle_winner_member_id)}, { $set: { 'got_the_committee': false } });
-        await committee_members.updateOne({ '_id':new mongoose.Types.ObjectId( data.member_id )}, { $set: { 'got_the_committee': true } });
+        await committee_members.updateOne({ '_id': new mongoose.Types.ObjectId(data.cycle_winner_member_id) }, { $set: { 'got_the_committee': false } });
+        await committee_members.updateOne({ '_id': new mongoose.Types.ObjectId(data.member_id) }, { $set: { 'got_the_committee': true } });
         await committee_cycles.updateOne({ '_id': data.cycle_id }, { $set: { 'cycle_winner_id': data.member_id } });
-        await notificationmodel.deleteOne({"_id":data.notification_id});
+        await notificationmodel.deleteOne({ "_id": data.notification_id });
         res.send("Swap Successful")
     } catch (error) {
         console.log(error)
@@ -1690,3 +1693,110 @@ app.put('/swap-accepted', async (req, res) => {
 
 })
 
+app.post('/rate-admin', async (req, res) => {
+    try {
+        let data = req.body;//{committee_id,admin_id,member_id,admin_rating};
+
+
+        let checker = await admin_rating_model.findOne({ 'member_id': data.member_id });
+        if (checker) {
+            await admin_ratings.updateOne({ '_id': checker._id }, { $set: { 'rating': data.admin_rating } });
+        }
+        else {
+            let new_rating = new admin_rating_model({
+                'committee_id': data.committee_id,
+                'admin_id': data.admin_id,
+                'member_id': data.member_id,
+                'rating': data.admin_rating
+            })
+            await new_rating.save();
+        }
+
+        let all_members = await admin_rating_model.find({ 'committee_id': data.committee_id });
+
+
+        let allratingsarray = all_members.map(x => x.rating);
+        let sum_all_array_data = allratingsarray.reduce((acc, curr) => acc + curr, 0);
+        let adi_rating = Math.round(sum_all_array_data / allratingsarray.length)
+
+        await sharedCommittee.updateOne({ '_id': data.committee_id }, { $set: { 'admin_rating': adi_rating } });
+        await users.updateOne({ '_id': data.admin_id }, { $set: { 'rating': adi_rating } });
+
+        res.send("Admin HasBeen Rated");
+    }
+    catch (error) {
+        console.log(error);
+    }
+
+
+
+
+})
+
+app.get('/get-admin-rating/:id', async (req, res) => {
+    let admin_id = req.params.id;
+    let data = await users.findOne({ '_id': admin_id });
+    res.send(data);
+})
+
+app.get('/get-member-rating/:id', async (req, res) => {
+    let committee_id = req.params.id;
+    // let data=await admin_ratings.aggregate([
+    //     {
+    //         $match:{
+    //             'committee_id':new mongoose.Types.ObjectId(committee_id)
+    //         }
+    //     }
+    //     ,
+    //     {
+    //         $lookup:{
+    //             from:'committee_members',
+    //             localField:'member_id',
+    //             foreignField:'_id',
+    //             as:'member_details'
+    //         }
+    //     }
+    //     ,
+    //     {
+    //         $unwind:"$member_details"
+    //     }
+    //     ,
+    //     {
+    //         $lookup:{
+    //             from:'users',
+    //             localField:'member_details.user_id',
+    //             foreignField:'_id',
+    //             as:'user_details'
+    //         }
+    //     }
+    //     ,
+    //     {
+    //         $unwind:"$user_details"
+    //     }
+    // ])
+    let data = await committee_members.aggregate([
+        {
+
+            $match: {
+                'committee_id': new mongoose.Types.ObjectId(committee_id)
+            }
+
+        }
+        ,
+        {
+            $lookup: {
+                from: 'users',
+                localField: 'user_id',
+                foreignField: '_id',
+                as: 'user_details'
+            }
+
+        }
+        ,
+        {
+            $unwind:"$user_details"
+        }
+    ])
+
+    res.send(data);
+})

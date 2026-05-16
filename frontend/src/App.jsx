@@ -17,6 +17,7 @@ import Bidding from './pages/bidding/Bidding.jsx'
 import AdminCommitteeDetails from './pages/admin committee details/AdminCommitteeDetails.jsx'
 import Payment from './pages/payment/Payment.jsx'
 import PersonalCommittee from './pages/personal committees/PersonalCommittee.jsx'
+import CommitteeMemberRating from './pages/committee member rating/CommitteeMemberRating.jsx'
 function App() {
   return (
     <>
@@ -35,6 +36,7 @@ function App() {
       <Route path='/admin-committee-details' element={<AdminCommitteeDetails/>}/>
       <Route path='/payment'element={<Payment/>}/>
       <Route path='/Personal-committee' element={<PersonalCommittee/>}/>
+      <Route path='/Committee-users-rating' element={<CommitteeMemberRating/>}/>
     </Routes>
     </>
   )

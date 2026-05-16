@@ -34,6 +34,10 @@ const sharedCommitteeSchema = new mongoose.Schema({
     } ,
     admin_id: {
         type: mongoose.Schema.Types.ObjectId,
+    },
+    admin_rating:{
+        type:Number,
+        default:5
     }
 })
 

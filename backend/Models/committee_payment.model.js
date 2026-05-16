@@ -26,7 +26,6 @@ const committee_payment_schema = new mongoose.Schema({
         type:Boolean,
         default:false
     }
-
 })
 const committee_payment=mongoose.model('committee_payment',committee_payment_schema);
 export default committee_payment;

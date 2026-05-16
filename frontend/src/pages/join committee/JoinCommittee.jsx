@@ -3,15 +3,16 @@ import Navigation from '../../components/navigation/Navigation.jsx'
 import './joinCommittee.css'
 import { AiOutlineSearch } from "react-icons/ai";
 import axios from 'axios';
-import { useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from "react-router-dom";
 
 function JoinCommittee() {
     const location = useLocation();
+    const navigate = useNavigate();
     let user_data = location.state;//ya bandaa committee join karnaa chaataa ha.from the lobby
-   
+
     const [searchNumber, setsearchNumber] = useState('');
     let [committee_details, setcommittee_details] = useState([]);// is wo committees hann jis ka admin find kia hoa number ha.
-    let [number_of_committee,setnumber_of_committee]=useState(1);
+    let [number_of_committee, setnumber_of_committee] = useState(1);
     let handlechange = (e) => {
         let { name, type, value, checked } = e.target;
         setsearchNumber(value);
@@ -26,15 +27,16 @@ function JoinCommittee() {
         })
 
     }
-    let sendrequest = (committee_admin_id, committee_id) => {
+    let sendrequest = (committee_admin_id, committee_id, committee_detail_obj) => {
         let notification_data = {
             'receiver_id': committee_admin_id,
             'committee_id': committee_id,
-            'user':user_data,
-            'number_of_committee':number_of_committee,
-            'notification_type':1
+            'committee_detail': committee_detail_obj,
+            'user': user_data,
+            'number_of_committee': number_of_committee,
+            'notification_type': 1
         }
-        axios.post(`http://localhost:8080/create-notification`,notification_data).then((res)=>{
+        axios.post(`http://localhost:8080/create-notification`, notification_data).then((res) => {
             alert(res.data);
         })
     }
@@ -73,20 +75,21 @@ function JoinCommittee() {
                                                 </p>
                                                 <div className='flex'>
                                                     <h1>No of committees: {number_of_committee}</h1>
-                                                    <button className='num_of_com_btn' onClick={()=>setnumber_of_committee((pre)=>(pre+1))}>+</button>
-                                                    <button className='num_of_com_btn' onClick={()=>{
-                                                        if(number_of_committee===1){
+                                                    <button className='num_of_com_btn' onClick={() => setnumber_of_committee((pre) => (pre + 1))}>+</button>
+                                                    <button className='num_of_com_btn' onClick={() => {
+                                                        if (number_of_committee === 1) {
                                                             alert('Committee Can Not be lessThen 1');
                                                         }
-                                                        else{
-                                                            setnumber_of_committee((pre)=>(pre-1))
+                                                        else {
+                                                            setnumber_of_committee((pre) => (pre - 1))
                                                         }
                                                     }}>-</button>
                                                 </div>
                                             </div>
                                         </div>
                                         <div className=' flex justify-end'>
-                                            <button className='bg-[#D36556] px-2 py-1 rounded-2xl text-[white] text-sm hover:bg-[#ca5141]' onClick={() => { sendrequest(value._id, value.committee_detail._id) }}>Request</button>
+                                            <button className='bg-[#D36556] px-2 py-1 rounded-2xl text-[white] text-sm hover:bg-[#ca5141]' onClick={()=>{navigate('/Committee-users-rating',{state:{'committee_id':value.committee_detail._id,'admin_id':value.committee_detail.admin_id}})}}>See Ratings</button>
+                                            <button className='bg-[#D36556] px-2 py-1 rounded-2xl text-[white] text-sm hover:bg-[#ca5141]' onClick={() => { sendrequest(value._id, value.committee_detail._id, value.committee_detail) }}>Request</button>
                                         </div>
                                     </div>
                                 ))

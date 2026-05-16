@@ -13,9 +13,11 @@ function CommitteeDetails() {
     const location = useLocation();
     const navigate = useNavigate();
     const data = location.state;//this comtain current committee data which i want to see details from lobby [committee_member] join with[sharedcommittee]
+  console.log(data);
     const [committee_current_cycle, setcommittee_current_cycle] = useState([]);//contain this committee this month dues. by joining the [committee_cycle],[committee_payments]
     const [committee_owner_details, setcommittee_owner_details] = useState({});  //joining the [cycle],[committee_member],[users]
     const [remaining_committee_owners, setremaining_committee_owners] = useState([]);
+    const[admin_rating,setadmin_rating]=useState("");
 
     let handle_exit = () => {
         axios.post('http://localhost:8080/exit-committee', data).then((res) => {
@@ -29,7 +31,7 @@ function CommitteeDetails() {
         let winner_member_id = committee_owner_details.member._id;// joo committee jeet gayaa ha.
         let committee_id = data.committee_id;
         let cycle_id = committee_owner_details._id;
-     
+
         axios.post('http://localhost:8080/swap-request', {
             swaping_member_id,
             winner_member_id,
@@ -46,6 +48,35 @@ function CommitteeDetails() {
             console.log(res.data);
         })
     }
+
+
+
+let Submit_admin_rating=(e)=>{
+    e.preventDefault();
+    if(admin_rating>5 || admin_rating<0){
+        alert("Rating must be lass then the 5 and greater than 0");
+        setadmin_rating("")
+    }
+    else{
+
+            axios.post(`http://localhost:8080/rate-admin`,{'committee_id':data.committee_id,'admin_rating':admin_rating,'member_id':data._id,'admin_id':data.committee_details.admin_id}).then((res)=>{
+        alert(res.data);
+    })
+    }
+
+}
+
+
+let handle_admin_rating_change=(e)=>{
+    let {name,type,value}=e.target;
+     setadmin_rating(value);
+
+}
+
+
+
+
+
     useEffect(() => {
         let current_date = new Date().toISOString(); //getting current date
 
@@ -148,7 +179,7 @@ function CommitteeDetails() {
                                             //ma check kr rahaa hoo k member_id jo k committee details daak 
                                             // rahaa haa eual too nahi ha member_id jis ki committee nikli ha.
                                             // kyu k member apnaa aap ko hi swap request baj saktaa haa.
-                                            (data._id !== committee_owner_details.member._id && data.got_the_committee!== true) && (
+                                            (data._id !== committee_owner_details.member._id && data.got_the_committee !== true) && (
                                                 <button className='swap-btn text-sm mx-4' onClick={handle_swap}>Swap</button>
                                             )
                                         }
@@ -192,6 +223,8 @@ function CommitteeDetails() {
 
 
 
+
+
                 <div className='details-outer'>
                     <div className='remaining-scroll'>
                         <div className='font-medium flex justify-around'>
@@ -221,6 +254,19 @@ function CommitteeDetails() {
                             {/*  */}
                         </div>
                     </div>
+                </div>
+
+
+
+                <div className='details-outer'>
+                    <div className='font-medium'>
+                        <h1>Rate Admin</h1>
+                    </div>
+                    <form onSubmit={Submit_admin_rating}>
+                        <input type='text' name='admin_rating' value={admin_rating} placeholder='Enter rating 1 to 5' onChange={handle_admin_rating_change} required/>
+                        <input type='submit' value='RateNow' className='draw-btn' />
+                    </form>
+
                 </div>
 
 
