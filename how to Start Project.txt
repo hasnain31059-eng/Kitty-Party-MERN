@@ -1,0 +1,6 @@
+1.open the the Kitty-Party-MERN with the VsCode eitor
+2.open 2 folder in integrated terminal
+  * frontend
+  * backend
+3.in the frontend terminal type               npm run dev
+4.in the backend terminal type                npm start
