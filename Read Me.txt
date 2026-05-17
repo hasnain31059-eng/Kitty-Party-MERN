@@ -1,3 +1,11 @@
+
+This Project is Created in 
+                           Frontend        React Js
+                           Backend         Node/Express
+                           Database        MongoDB
+
+
+
 1.open the the Kitty-Party-MERN with the VsCode eitor
 2.open 2 folder in integrated terminal
   * frontend
